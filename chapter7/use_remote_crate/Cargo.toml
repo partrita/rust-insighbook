@@ -1,0 +1,7 @@
+[package]
+name = "use_remote_crate"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+my_library = {git="https://github.com/insightbook/rust", package = "my_library", branch = "main"}
