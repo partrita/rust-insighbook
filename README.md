@@ -32,7 +32,6 @@
 ---
 
 ## 🛒 도서 구매 링크
-이 책은 다음 주요 서점에서 구입하실 수 있습니다.
 
 * [교보문고](https://product.kyobobook.co.kr/detail/S000219305571)
 * [YES24](https://www.yes24.com/product/goods/179717384)
