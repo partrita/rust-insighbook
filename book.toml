@@ -1,0 +1,9 @@
+[book]
+title = "러스트 프로그래밍 입문 예제 코드"
+authors = ["insightbook"]
+description = "러스트 프로그래밍 입문 예제 코드 및 요약"
+language = "ko"
+src = "build_source"
+
+[build]
+build-dir = "book"

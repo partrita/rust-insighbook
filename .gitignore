@@ -22,3 +22,8 @@ Thumbs.db
 
 # Agentic CLI configuration
 .antigravitycli/
+
+# mdBook build directory
+book/
+build_source/
+

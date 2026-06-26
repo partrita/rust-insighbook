@@ -1,0 +1,60 @@
+name: Deploy mdBook to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queue.
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # Build and deploy job
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: 'latest'
+
+      - name: Prepare build source
+        run: |
+          rm -rf build_source
+          mkdir -p build_source
+          find . -name "*.md" -not -path "*/.*" -not -path "*/target/*" -not -path "./build_source/*" -not -path "./book/*" | while read -r file; do
+            mkdir -p "build_source/$(dirname "$file")"
+            cp "$file" "build_source/$file"
+          done
+          # Copy SUMMARY.md to the source directory
+          cp SUMMARY.md build_source/SUMMARY.md
+
+      - name: Build Book
+        run: mdbook build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./book
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
