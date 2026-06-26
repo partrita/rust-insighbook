@@ -1,6 +1,6 @@
 // 표준 라이브러리에서 파일 입출력 및 버퍼링 처리를 위한 모듈을 가져옵니다.
 use std::{
-    fs::File, // 파일 열기 및 생성을 위한 구조체
+    fs::File,                   // 파일 열기 및 생성을 위한 구조체
     io::{BufReader, BufWriter}, // 입출력 속도 향상을 위해 버퍼를 사용하는 리더와 라이터
 };
 
@@ -132,14 +132,18 @@ fn read_calendar() -> Calendar {
     let file = match File::open(SCHEDULE_FILE) {
         Ok(file) => file,
         Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => {
-            return Calendar { schedules: Vec::new() };
+            return Calendar {
+                schedules: Vec::new(),
+            };
         }
         Err(e) => panic!("파일을 여는 중 오류가 발생했습니다: {:?}", e),
     };
     // 성능 향상을 위해 파일 읽기 스트림에 버퍼를 추가합니다.
     let reader = BufReader::new(file);
     // JSON 리더를 통해 Calendar 구조체로 역직렬화하여 반환합니다.
-    serde_json::from_reader(reader).unwrap_or_else(|_| Calendar { schedules: Vec::new() })
+    serde_json::from_reader(reader).unwrap_or_else(|_| Calendar {
+        schedules: Vec::new(),
+    })
 }
 
 // 캘린더 데이터를 JSON 파일로 저장하는 헬퍼 함수입니다.
@@ -247,10 +251,10 @@ mod tests {
     // #[case(...)] 매크로를 사용하여 여러 조건의 테스트 데이터를 한 번에 검증합니다.
     #[rstest]
     #[case(18, 15, 18, 45, false)] // 기존 일정 18:15 ~ 18:45 이므로 신규 일정(19:00 ~ 20:00)과 겹치지 않음 -> false
-    #[case(18, 15, 19, 45, true)]  // 기존 일정 18:15 ~ 19:45 이므로 신규 일정과 일부 겹침 -> true
-    #[case(18, 15, 20, 45, true)]  // 기존 일정 18:15 ~ 20:45 이므로 신규 일정을 통째로 포함하여 겹침 -> true
-    #[case(19, 15, 19, 45, true)]  // 기존 일정 19:15 ~ 19:45 이므로 신규 일정 내에 포함되어 겹침 -> true
-    #[case(19, 15, 20, 45, true)]  // 기존 일정 19:15 ~ 20:45 이므로 신규 일정의 뒷부분과 겹침 -> true
+    #[case(18, 15, 19, 45, true)] // 기존 일정 18:15 ~ 19:45 이므로 신규 일정과 일부 겹침 -> true
+    #[case(18, 15, 20, 45, true)] // 기존 일정 18:15 ~ 20:45 이므로 신규 일정을 통째로 포함하여 겹침 -> true
+    #[case(19, 15, 19, 45, true)] // 기존 일정 19:15 ~ 19:45 이므로 신규 일정 내에 포함되어 겹침 -> true
+    #[case(19, 15, 20, 45, true)] // 기존 일정 19:15 ~ 20:45 이므로 신규 일정의 뒷부분과 겹침 -> true
     #[case(20, 15, 20, 45, false)] // 기존 일정 20:15 ~ 20:45 이므로 신규 일정의 종료 시각보다 늦어 겹치지 않음 -> false
     fn test_schedule_intersects(
         #[case] h0: u32, // 테스트 케이스로부터 주입받을 기존 일정의 시작 시(hour)
@@ -382,4 +386,3 @@ mod tests {
         assert_eq!(expected, calendar);
     }
 }
-

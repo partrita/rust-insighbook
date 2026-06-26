@@ -40,13 +40,13 @@ fn main() {
         all_paths.push(path);
     }
 
-    // 처리된 이미지 개수를 누적할 가변 카운터를 생성하고, 
+    // 처리된 이미지 개수를 누적할 가변 카운터를 생성하고,
     // 여러 스레드가 동시에 접근해 수정할 수 있도록 Mutex 및 Arc로 안전하게 감쌉니다.
     let processed_count = Arc::new(Mutex::new(0));
-    
+
     // 워커 스레드들의 JoinHandle을 저장할 벡터입니다.
     let mut handles = vec![];
-    
+
     // 전체 경로 리스트(all_paths)를 4개의 분량(청크)으로 쪼갭니다.
     // (all_paths.len() + 3) / 4는 4개 스레드로 균등 분할하기 위해 올림(ceiling) 연산을 처리한 크기입니다.
     for chunk in all_paths.chunks((all_paths.len() + 3) / 4) {
@@ -56,7 +56,7 @@ fn main() {
         let processed_count = processed_count.clone();
         // 저장 폴더의 경로를 각 스레드로 넘겨주기 위해 복제합니다.
         let output = args.output.clone();
-        
+
         // 스레드를 새롭게 스폰하고 핸들을 벡터에 저장합니다.
         // move 키워드는 chunk, processed_count, output의 소유권을 스레드 안으로 이동시킵니다.
         handles.push(thread::spawn(move || {
@@ -65,25 +65,25 @@ fn main() {
                 // 출력 폴더 밑에 원본 파일명을 붙인 저장 파일 경로를 작성합니다.
                 let output_path = output.join(path.file_name().unwrap());
                 // 이미지 파일을 읽습니다.
-                let img = image::open(&path); 
-                
+                let img = image::open(&path);
+
                 // 이미지 로드에 성공했다면 썸네일을 생성하고 파일에 저장합니다.
                 if let Ok(img) = img {
                     let thumbnail = img.thumbnail(64, 64); // 64x64 크기로 썸네일 렌더링
                     thumbnail.save(output_path).unwrap(); // 로컬 디스크에 파일 저장
-                    
+
                     // 전역 카운터(processed_count)의 잠금(lock)을 획득합니다.
                     // 이 락은 lock() 호출 시점부터 MutexGuard인 writer가 활성 상태인 동안 유지됩니다.
                     let mut writer = processed_count.lock().unwrap();
                     // 내부의 정수 값을 역참조(*)하여 1 증가시킵니다.
                     *writer += 1;
-                    // 이 반복문의 중괄호가 끝날 때 writer의 라이프타임이 끝나며 자동으로 락이 해제되어 
+                    // 이 반복문의 중괄호가 끝날 때 writer의 라이프타임이 끝나며 자동으로 락이 해제되어
                     // 다른 스레드가 대기 상태에서 풀려나 값을 수정할 수 있습니다.
                 }
             }
         }));
     }
-    
+
     // 메인 스레드가 각 워커 스레드의 실행이 모두 완료될 때까지 블로킹 상태로 기다립니다.
     for handle in handles {
         handle.join().unwrap();

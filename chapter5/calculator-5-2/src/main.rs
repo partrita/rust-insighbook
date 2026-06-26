@@ -42,4 +42,3 @@ fn main() {
 fn print_output(value: f64) {
     println!("  => {}", value);
 }
-

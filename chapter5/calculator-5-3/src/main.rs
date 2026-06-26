@@ -84,4 +84,3 @@ fn eval_expression(left: f64, operator: &str, right: f64) -> f64 {
         }
     }
 }
-

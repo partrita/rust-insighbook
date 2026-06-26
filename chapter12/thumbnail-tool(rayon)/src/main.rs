@@ -30,7 +30,7 @@ fn main() {
     // 입력 디렉터리 내의 모든 항목을 읽어서 Vec 구조에 모읍니다(collect).
     // read_dir()이 성공하면 Result에서 ReadDir 반복자를 가져오며, collect()를 통해 Vec<Result<DirEntry, Error>> 타입으로 변환됩니다.
     let items: Vec<_> = read_dir(&args.input).unwrap().collect();
-    
+
     // items 벡터를 rayon의 병렬 반복자(Parallel Iterator)인 ParallelIterator 형태로 변환합니다.
     // into_par_iter()는 내부적으로 Rayon의 글로벌 스레드 풀을 이용하여 반복 작업을 여러 스레드에 나누어 병렬로 처리합니다.
     let result = items.into_par_iter().map(|item| {
@@ -38,7 +38,7 @@ fn main() {
         let item = item.unwrap();
         // 파일 또는 폴더의 절대/상대 경로를 가져옵니다.
         let path = item.path();
-        
+
         // 만약 대상이 폴더인 경우에는 처리를 건너뛰고 0을 반환합니다. (이미지만 처리해야 하므로)
         if path.is_dir() {
             return 0;
@@ -46,10 +46,10 @@ fn main() {
 
         // 출력할 디렉터리에 이미지 파일 이름만 붙여서 최종 저장 파일 경로를 작성합니다.
         let output_path = args.output.join(path.file_name().unwrap());
-        
+
         // 이미지 파일을 엽니다. (디코딩 및 읽기 작업)
         let img = image::open(&path);
-        
+
         // 이미지 오픈에 성공하면 썸네일을 만들어 저장하고, 성공의 의미로 1을 반환합니다.
         if let Ok(img) = img {
             // 이미지 비율을 유지하면서 64x64 크기로 축소합니다.

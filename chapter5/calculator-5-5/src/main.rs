@@ -98,7 +98,7 @@ impl Memory {
 // 수식을 구성하는 토큰들을 표현하는 열거형
 #[derive(Debug, PartialEq)]
 enum Token {
-    Number(f64),        // 숫자 (예: 1.23)
+    Number(f64),         // 숫자 (예: 1.23)
     MemoryRef(String),   // 메모리 조회 (예: memA)
     MemoryPlus(String),  // 메모리 가산 (예: memA+)
     MemoryMinus(String), // 메모리 감산 (예: memA-)
@@ -238,4 +238,3 @@ fn eval_primary_expression(tokens: &[Token], index: usize, memory: &Memory) -> (
         }
     }
 }
-

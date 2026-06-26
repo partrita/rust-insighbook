@@ -27,7 +27,7 @@ fn main() {
 
     // 처리된 이미지 개수를 세기 위한 카운터 변수를 초기화합니다.
     let mut processed_count = 0;
-    
+
     // 입력 디렉터리 내부를 읽고, 각 항목(파일 또는 폴더)을 하나씩 순회합니다.
     // read_dir은 Result를 반환하므로 unwrap()으로 성공 시의 ReadDir 반복자를 가져옵니다.
     for item in read_dir(&args.input).unwrap() {
@@ -35,7 +35,7 @@ fn main() {
         let item = item.unwrap();
         // DirEntry로부터 파일이나 폴더의 전체 경로를 PathBuf 형태로 추출합니다.
         let input_path = item.path();
-        
+
         // 경로가 디렉터리(폴더)인지 확인합니다.
         if input_path.is_dir() {
             // 폴더인 경우에는 썸네일 작성 대상에서 제외하고 다음 루프로 넘어갑니다.
@@ -45,21 +45,21 @@ fn main() {
         // image 크레이트를 사용하여 지정된 경로의 이미지 파일을 읽어옵니다.
         // 이 작업은 동기(Synchronous) 방식으로 작동하며, 파일 로딩 및 디코딩을 수행합니다.
         let img = image::open(&input_path);
-        
+
         // 이미지 읽기에 성공하여 Result가 Ok(DynamicImage) 형태인 경우에만 블록을 실행합니다.
         if let Ok(img) = img {
             // 가로 64, 세로 64 크기의 썸네일 이미지를 생성합니다.
             // 비율을 유지하면서 썸네일을 제작하는 동기 처리 방식입니다.
             let thumbnail = img.thumbnail(64, 64);
-            
+
             // 출력 폴더 경로 뒤에 원본 파일명을 붙여 저장할 전체 경로를 생성합니다.
             // input_path.file_name()은 Option<&OsStr>을 반환하므로 unwrap()으로 파일명을 꺼냅니다.
             let output_path = args.output.join(input_path.file_name().unwrap());
-            
-            // 생성된 썸네일을 지정된 출력 경로에 파일로 저장합니다. 
+
+            // 생성된 썸네일을 지정된 출력 경로에 파일로 저장합니다.
             // 저장 실패 시 unwrap()으로 프로그램을 정지시킵니다.
             thumbnail.save(output_path).unwrap();
-            
+
             // 성공적으로 저장한 경우 처리된 파일 카운트를 1 증가시킵니다.
             processed_count += 1;
         }

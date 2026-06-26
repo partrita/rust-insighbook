@@ -125,7 +125,7 @@ async fn update(pool: web::Data<SqlitePool>, form: web::Form<Task>) -> HttpRespo
 async fn main() -> std::io::Result<()> {
     // 메모리에만 상주하는 가상의 SQLite 데이터베이스 풀("sqlite::memory:")을 비동기 연결하여 생성합니다.
     let pool = SqlitePool::connect("sqlite::memory:").await.unwrap();
-    
+
     // 비동기 sqlx 실행기를 통해 테이블 생성 쿼리를 보냅니다.
     sqlx::query("CREATE TABLE tasks (task TEXT);")
         .execute(&pool)
@@ -151,7 +151,7 @@ async fn main() -> std::io::Result<()> {
         // move 키워드를 통해 외부 환경의 SQLite pool 변수를 클로저 내부로 캡처(소유권 이동)해옵니다.
         App::new()
             .service(hello) // "/hello/{name}" GET 라우트 서비스 등록
-            .service(todo)  // "/" GET 라우트 서비스 등록
+            .service(todo) // "/" GET 라우트 서비스 등록
             .service(update) // "/update" POST 라우트 서비스 등록
             // 모든 핸들러에서 안전하게 데이터베이스 풀을 얻어 쓸 수 있도록 애플리케이션 데이터(app_data)에 등록합니다.
             .app_data(web::Data::new(pool.clone()))
@@ -164,4 +164,3 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
-

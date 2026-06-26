@@ -1,15 +1,15 @@
 // 외부 크레이트인 fuzzy_matcher에서 퍼지 매칭 인터페이스(FuzzyMatcher)와 구현체(SkimMatcherV2)를 가져옵니다.
 // 퍼지 매칭이란 문자열의 일부만 일치하거나 오타가 있어도 유사도를 측정하여 검색해 주는 기능입니다.
-use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
+use fuzzy_matcher::{FuzzyMatcher, skim::SkimMatcherV2};
 
 // 부모 모듈(super 즉, library 모듈) 하위의 book 모듈로부터 Book 구조체를 가져옵니다.
 use super::book::Book;
 
 // 책들을 저장할 책장 구조체입니다. 외부(다른 크레이트)에서 인스턴스화하여 사용할 수 있도록 pub로 선언합니다.
-// 구조체 자체는 공개(pub)되지만, 내부 필드(books, matcher)는 pub 키워드가 없으므로 
+// 구조체 자체는 공개(pub)되지만, 내부 필드(books, matcher)는 pub 키워드가 없으므로
 // 구조체가 속한 모듈 외부에서는 직접 필드에 접근하여 수정하거나 읽을 수 없습니다(캡슐화).
 pub struct Bookshelf {
-    books: Vec<Book>,      // Book 구조체 객체들을 저장하는 동적 배열(Vector) 컬렉션
+    books: Vec<Book>,       // Book 구조체 객체들을 저장하는 동적 배열(Vector) 컬렉션
     matcher: SkimMatcherV2, // 퍼지 문자열 검색을 수행할 매처 객체
 }
 
@@ -31,11 +31,11 @@ impl Bookshelf {
         // Bookshelf 인스턴스를 구조체 리터럴 표현으로 생성하여 반환합니다.
         Self {
             books: Vec::new(), // 빈 벡터를 생성하여 대입합니다.
-            matcher,           // 변수명과 필드명이 같으므로 생략형태(field init shorthand)로 전달합니다.
+            matcher, // 변수명과 필드명이 같으므로 생략형태(field init shorthand)로 전달합니다.
         }
     }
 
-    // 책을 책장에 추가하는 메서드입니다. 
+    // 책을 책장에 추가하는 메서드입니다.
     // self의 내부 상태(books 벡터)를 수정해야 하므로 가변 참조(&mut self)를 매개변수로 받습니다.
     pub fn add_book(&mut self, book: Book) {
         // books 벡터의 끝에 전달받은 book 객체를 추가(push)합니다.
@@ -90,7 +90,7 @@ impl Bookshelf {
 mod tests {
     // 부모 모듈(super)에 있는 Book 구조체와 Bookshelf 구조체를 가져옵니다.
     use super::{Book, Bookshelf};
-    
+
     // 이 함수가 단위 테스트(Unit Test) 메서드임을 컴파일러에 알리는 어트리뷰트입니다.
     #[test]
     fn test_bookshelf() {
@@ -108,4 +108,3 @@ mod tests {
         println!("{:?}", found_books);
     }
 }
-

@@ -41,12 +41,12 @@ fn main() {
         let (tx, rx) = channel::<PathBuf>();
         // 메인 스레드가 각 워커에 작업을 분배할 수 있도록 송신기(tx)를 외부 벡터에 보관합니다.
         channels.push(tx);
-        
+
         // 각 스레드가 완료 신호를 보낼 수 있도록 카운터 송신기(counter_tx)를 복제합니다.
         let counter_tx = counter_tx.clone();
         // 각 스레드에서 저장할 출력 디렉터리 경로를 복제합니다.
         let output = args.output.clone();
-        
+
         // 스레드를 스폰하여 실행합니다. move 키워드로 클론된 변수들의 소유권을 스레드 내부로 보냅니다.
         handles.push(thread::spawn(move || {
             // rx.recv()는 채널이 닫히기 전까지 메시지가 올 때까지 대기(블로킹)합니다.
@@ -56,7 +56,7 @@ fn main() {
                 let output_path = output.join(path.file_name().unwrap());
                 // 이미지 파일을 읽습니다.
                 let img = image::open(&path);
-                
+
                 // 이미지 열기에 성공했을 경우에만 썸네일 처리 로직을 실행합니다.
                 if let Ok(img) = img {
                     // 가로세로 64 크기로 썸네일을 생성합니다.
@@ -89,7 +89,7 @@ fn main() {
     for channel in channels {
         drop(channel);
     }
-    
+
     // 메인 스레드가 가지고 있던 원본 counter_tx 역시 소멸(drop)시켜야 합니다.
     // 이를 삭제해야 counter_rx가 더 이상 수신할 메시지가 없음을 인지하고 대기를 끝낼 수 있습니다.
     drop(counter_tx);
