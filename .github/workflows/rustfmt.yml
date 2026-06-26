@@ -1,0 +1,64 @@
+name: Rust Formatting Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  rustfmt:
+    name: Check Rust Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+
+      - name: Run formatting check
+        run: |
+          failed=0
+
+          echo "Checking cargo projects..."
+          while IFS= read -r cargo_toml; do
+            echo "Checking cargo project: $cargo_toml"
+            if ! cargo fmt --manifest-path "$cargo_toml" -- --check; then
+              echo "::error file=$cargo_toml::Formatting check failed for cargo project at $cargo_toml"
+              failed=1
+            fi
+          done < <(find . -name Cargo.toml -not -path "*/target/*" -not -path "*/.git/*")
+
+          echo "Checking standalone Rust files..."
+          while IFS= read -r rs_file; do
+            if [ -n "$rs_file" ]; then
+              # Check if any parent directory contains Cargo.toml
+              dir=$(dirname "$rs_file")
+              is_cargo=0
+              while [ "$dir" != "." ] && [ "$dir" != "/" ]; do
+                if [ -f "$dir/Cargo.toml" ]; then
+                  is_cargo=1
+                  break
+                fi
+                dir=$(dirname "$dir")
+              done
+
+              if [ $is_cargo -eq 0 ]; then
+                echo "Checking standalone file: $rs_file"
+                if ! rustfmt --edition 2021 --check "$rs_file"; then
+                  echo "::error file=$rs_file::Formatting check failed for standalone file $rs_file"
+                  failed=1
+                fi
+              fi
+            fi
+          done < <(find . -name "*.rs" -not -path "*/target/*" -not -path "*/.git/*")
+
+          if [ $failed -ne 0 ]; then
+            echo "Formatting check failed. Please format the files above and commit again."
+            exit 1
+          fi
+          echo "All Rust files are formatted correctly!"

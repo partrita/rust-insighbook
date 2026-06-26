@@ -1,0 +1,24 @@
+# Rust build artifacts
+target/
+**/target/
+
+# Cargo cache and temp files
+cargo-tarpaulin-cache/
+**/*.rs.bk
+*.pdb
+
+# IDE and Editor settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Agentic CLI configuration
+.antigravitycli/

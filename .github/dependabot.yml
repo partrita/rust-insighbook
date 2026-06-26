@@ -1,0 +1,40 @@
+version: 2
+updates:
+  # Check for updates to Rust dependencies
+  - package-ecosystem: "cargo"
+    directories:
+      - "/chapter2/hello_world"
+      - "/chapter3"
+      - "/chapter4"
+      - "/chapter5/calculator-5-2"
+      - "/chapter5/calculator-5-3"
+      - "/chapter5/calculator-5-4"
+      - "/chapter5/calculator-5-5"
+      - "/chapter6"
+      - "/chapter7/another_bin"
+      - "/chapter7/my_library"
+      - "/chapter7/my_package"
+      - "/chapter7/use_remote_crate"
+      - "/chapter8"
+      - "/chapter9"
+      - "/chapter10"
+      - "/chapter11"
+      - "/chapter12/parallel-add"
+      - "/chapter12/thumbnail-tool(channel)"
+      - "/chapter12/thumbnail-tool(rayon)"
+      - "/chapter12/thumbnail-tool(sync)"
+      - "/chapter12/thumbnail-tool(thread)"
+      - "/chapter13/merge-array"
+      - "/chapter13/parenthesis"
+    schedule:
+      interval: "weekly"
+    groups:
+      rust-dependencies:
+        patterns: ["*"]
+        group-by: dependency-name
+
+  # Check for updates to GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
